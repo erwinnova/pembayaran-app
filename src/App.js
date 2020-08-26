@@ -25,11 +25,13 @@ class App extends React.Component {
         pembayaran: 0
       }
     ],
-    pembayaranPerBuruh: [],
-    jumlahBuruh: 3,
     inputValue: 0,
-    selectedId: 0,
-    newJumlahPembayaran: 0
+    selectedId: 0
+  }
+
+  onTotalBonusUpdate = (value) => {
+    this.setState({ jumlahPembayaran: value})
+    this.inputPercentage()
   }
 
   eventHandler = async (id, value) => {
@@ -56,11 +58,10 @@ class App extends React.Component {
 
   countTotalPembayaran = () => {
     let { jumlahPembayaran } = this.state
-    var newVal = jumlahPembayaran
     this.setState(state => {
       const pembayaran = state.buruh.map((val) => {
         if (val.percentage != 0) {
-          val.pembayaran = jumlahPembayaran * val.percentage / 100
+          val.pembayaran = parseInt(jumlahPembayaran) * val.percentage / 100
         }
       })
       return{
@@ -151,13 +152,15 @@ class App extends React.Component {
   onBtnSimpan = () => {
     let { buruh } = this.state
     var output = 0
+    console.log(buruh)
     for (var i = 0; i < buruh.length; i++) {
       if (buruh[i].percentage == 0) {
-        return alert('Error! Pembagian bonus masih salah')
+        return alert('Error! 1 Pembagian bonus masih salah')
       }
-      output += buruh[i].percentage
+      output = output + parseInt(buruh[i].percentage)
     }
-    if (output != 100) {
+    console.log(output)
+    if (output !== 100) {
       return alert('Error! Pembagian bonus masih salah')
     }
     alert('Selamat! Data berhasil disimpan ke database')
@@ -174,11 +177,11 @@ class App extends React.Component {
   }
 
   render() {
-    let { newJumlahPembayaran, jumlahPembayaran } = this.state
+    let { jumlahPembayaran } = this.state
     return (
       <div className="container">
         <div style={{ marginBottom: "1rem"}}>
-          Pembayaran Rp. <input type="number" value={jumlahPembayaran} placeholder="Dalam rupiah" onChange={(e) => this.setState({ jumlahPembayaran: parseInt(e.target.value) })} style={{ height: "2rem"}}/>
+          Pembayaran Rp. <input type="number" value={jumlahPembayaran} placeholder="Dalam rupiah" onChange={(e) => this.onTotalBonusUpdate(e.target.value)} style={{ height: "2rem"}}/>
         </div>
         <table>
           {this.renderBuruh()}
